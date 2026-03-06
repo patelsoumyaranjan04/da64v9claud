@@ -38,11 +38,10 @@ class Momentum:
 
         for vW, vb, layer in zip(self.vW, self.vb, layers):
 
-            vW[:] = self.beta * vW + self.lr * (layer.grad_W + self.wd * layer.W)
-            vb[:] = self.beta * vb + self.lr * layer.grad_b
-
-            layer.W -= vW
-            layer.b -= vb
+            vW[:] = self.beta * vW - self.lr * (layer.grad_W + self.wd * layer.W)
+            vb[:] = self.beta * vb - self.lr * layer.grad_b
+            layer.W += vW
+            layer.b += vb
 
 
 class NAG:
@@ -68,9 +67,8 @@ class NAG:
             prev_w = self.vW[i].copy()
             prev_b = self.vb[i].copy()
 
-            self.vW[i] = self.beta * self.vW[i] + self.lr * (layer.grad_W + self.wd * layer.W)
-            self.vb[i] = self.beta * self.vb[i] + self.lr * layer.grad_b
-
+            self.vW[i] = self.beta * self.vW[i] - self.lr * (layer.grad_W + self.wd * layer.W)
+            self.vb[i] = self.beta * self.vb[i] - self.lr * layer.grad_b
             layer.W -= (1 + self.beta) * self.vW[i] - self.beta * prev_w
             layer.b -= (1 + self.beta) * self.vb[i] - self.beta * prev_b
 
