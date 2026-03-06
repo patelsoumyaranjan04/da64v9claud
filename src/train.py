@@ -40,7 +40,7 @@ def parse_arguments():
 
 def _normalize_hidden(args):
     size = args.hidden_size
-    num_hidden = args.num_layers - 1          # ← fix: hidden layers = num_layers - 1
+    num_hidden = args.num_layers         # ← fix: hidden layers = num_layers - 1
 
     if len(size) < num_hidden:
         size = size + [size[-1]] * (num_hidden - len(size))

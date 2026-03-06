@@ -10,6 +10,7 @@
   "hidden_size": [
     128,
     128,
+    128,
     128
   ],
   "activation": "relu",
