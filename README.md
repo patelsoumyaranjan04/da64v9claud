@@ -2,7 +2,7 @@
 
 **Soumya Ranjan Patel · DA25M029** 
 
-Github link - 
+Github link - https://github.com/patelsoumyaranjan04/da6401_assignment_1
 W&B Report Link - https://api.wandb.ai/links/samwellthorson04-iit-madras/my889unx
 
 ## Overview
@@ -251,5 +251,6 @@ Performance on MNIST:
 
 Soumya Ranjan Patel
 DA6401 – Deep Learning
+
 
 
