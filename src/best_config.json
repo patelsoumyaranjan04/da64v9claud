@@ -4,7 +4,7 @@
   "batch_size": 64,
   "learning_rate": 0.001,
   "weight_decay": 0.0001,
-  "optimizer": "rmsprop",
+  "optimizer": "nag",
   "num_layers": 3,
   "hidden_size": [
     128,
@@ -18,7 +18,7 @@
   "model_save_path": "C:\\Users\\samwe\\OneDrive\\Desktop\\da6401_assignment_1_my\\src\\best_model.npy",
   "config_save_path": "C:\\Users\\samwe\\OneDrive\\Desktop\\da6401_assignment_1_my\\src\\best_config.json",
   "no_wandb": false,
-  "experiment": "rmsprop",
-  "test_f1": 0.9740678158229102,
-  "test_accuracy": 0.974
+  "experiment": "nag",
+  "test_f1": 0.9538521878526115,
+  "test_accuracy": 0.9539
 }
