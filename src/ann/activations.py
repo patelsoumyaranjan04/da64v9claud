@@ -4,41 +4,78 @@ import numpy as np
 def _clip(x):
     return np.clip(x, -500.0, 500.0)
 
-
-def relu(x):
-    return np.where(x > 0, x, 0)
-
-
-def relu_grad(x):
-    grad = np.zeros_like(x)
-    grad[x > 0] = 1.0
-    return grad
+class Activation:
+    
+    def forward(self, z):
+        raise NotImplementedError
+    
+    def backward(self, z):
+        raise NotImplementedError
 
 
-def sigmoid(x):
-    x = _clip(x)
-    return 1.0 / (1.0 + np.exp(-x))
+class ReLU(Activation):
+
+    def forward(self, x):
+        return np.maximum(0, x)
+
+    def backward(self, x):
+        grad =(x > 0).astype(float)
+        return grad
 
 
-def sigmoid_grad(x):
-    s = sigmoid(x)
-    return s * (1 - s)
+class Sigmoid(Activation):
+
+    def forward(self, x):
+        x = _clip(x)
+        return 1.0 / (1.0 + np.exp(-x))
+
+    def backward(self, x):
+        s = self.forward(x)
+        return s * (1.0 - s)
 
 
-def tanh(x):
-    return np.tanh(x)
+class Tanh(Activation):
+
+    def forward(self, x):
+        return np.tanh(x)
+
+    def backward(self, x):
+        t = np.tanh(x)
+        return 1.0 - t * t
 
 
-def tanh_grad(x):
-    t = np.tanh(x)
-    return 1 - t * t
+class Softmax(Activation):
+
+    def forward(self, z):
+        z_shifted = z - np.max(z, axis=-1, keepdims=True)
+        exp_z = np.exp(z_shifted)
+        return exp_z / np.sum(exp_z, axis=-1, keepdims=True)
 
 
-def softmax(z):
-    z = z - np.max(z, axis=1, keepdims=True)
-    e = np.exp(z)
-    return e / np.sum(e, axis=1, keepdims=True)
+    def backward(self, z):
+        s = self.forward(z)
+        return s * (1.0 - s)
 
 
-ACT_FN = dict(relu=relu, sigmoid=sigmoid, tanh=tanh)
-ACT_GRAD = dict(relu=relu_grad, sigmoid=sigmoid_grad, tanh=tanh_grad)
+class Identity(Activation):
+
+    def forward(self, x):
+        return x
+
+    def backward(self, x):
+        return np.ones_like(x)
+
+
+def get_activation(name):
+    activations = {
+        'sigmoid': Sigmoid(),
+        'tanh': Tanh(),
+        'relu': ReLU(),
+        'softmax': Softmax(),
+        'identiy':Identity()
+    }
+    
+    if name.lower() not in activations:
+        raise ValueError(f"Unknown activation: {name}")
+    
+    return activations[name.lower()]

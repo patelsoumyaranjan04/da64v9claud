@@ -1,49 +1,79 @@
+
+
 import numpy as np
-from ann.activations import ACT_FN, ACT_GRAD
+from .activations import get_activation
 
 
-class Layer:
+class NeuralLayer:
 
-    def __init__(self, in_dim, out_dim, activation, weight_init):
+    def __init__(self, input_size, output_size, activation=None, weight_init="xavier"):
 
-        self.activation = activation
-        self.W, self.b = self._init_weights(in_dim, out_dim, weight_init)
+        self.input_size = input_size
+        self.output_size = output_size
+
+        self.activation = None if activation is None else get_activation(activation)
+
+        self.W, self.b = self._initialize_parameters(weight_init)
 
         self.grad_W = None
         self.grad_b = None
 
-        self.cache_input = None
-        self.cache_z = None
+        self.cache = {}
 
-    def _init_weights(self, in_dim, out_dim, method):
+    def _initialize_parameters(self, method):
 
-        if method == "xavier":
-            limit = np.sqrt(6.0 / (in_dim + out_dim))
-            W = np.random.uniform(-limit, limit, (in_dim, out_dim))
+        if method == "random":
+            W = np.random.randn(self.input_size, self.output_size) * 0.01
+
+        elif method == "xavier":
+            limit = np.sqrt(6.0 / (self.input_size + self.output_size))
+            W = np.random.uniform(-limit, limit, (self.input_size, self.output_size))
+
+        elif method == "zeros":
+            W = np.zeros((self.input_size, self.output_size))
+
         else:
-            W = np.random.randn(in_dim, out_dim) * 0.01
+            raise ValueError("Unknown initialization")
 
-        b = np.zeros((1, out_dim))
+        b = np.zeros((1, self.output_size))
 
         return W, b
 
-    def forward(self, x):
+    def forward(self, X):
 
-        self.cache_input = x
-        z = np.dot(x, self.W) + self.b
-        self.cache_z = z
+        self.cache["X"] = X
+
+        z = np.dot(X, self.W) + self.b
+        self.cache["z"] = z
 
         if self.activation is None:
-            return z
+            a = z
+        else:
+            a = self.activation.forward(z)
 
-        return ACT_FN[self.activation](z)
+        self.cache["a"] = a
 
-    def backward(self, delta):
+        return a
 
-        if self.activation is not None:
-            delta = delta * ACT_GRAD[self.activation](self.cache_z)
+    def backward(self, dL_da, weight_decay=0.0):
 
-        self.grad_W = self.cache_input.T @ delta
-        self.grad_b = delta.sum(axis=0, keepdims=True)
+        X = self.cache["X"]
+        z = self.cache["z"]
 
-        return delta @ self.W.T
+        if self.activation is None:
+            dL_dz = dL_da
+        else:
+            da_dz = self.activation.backward(z)
+            dL_dz = dL_da * da_dz
+
+   
+        self.grad_W = np.dot(X.T, dL_dz)
+
+        if weight_decay > 0:
+            self.grad_W += weight_decay * self.W
+
+        self.grad_b = np.sum(dL_dz, axis=0, keepdims=True)
+
+        dL_dX = np.dot(dL_dz, self.W.T)
+
+        return dL_dX
