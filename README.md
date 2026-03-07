@@ -103,7 +103,7 @@ Create a virtual environment and install dependencies.
 ```bash
 python -m venv venv
 venv\Scripts\activate
-pip install numpy scikit-learn matplotlib wandb tensorflow
+pip install -r requirements.txt
 ```
 
 ---
@@ -251,4 +251,5 @@ Performance on MNIST:
 
 Soumya Ranjan Patel
 DA6401 – Deep Learning
+
 
