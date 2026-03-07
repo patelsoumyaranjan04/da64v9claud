@@ -110,14 +110,35 @@ pip install -r requirements.txt
 
 ---
 
-## Training
+## Command Line Arguments
 
-Run training using the CLI interface.
+The training script is fully configurable using CLI arguments.
 
-Example:
+| Argument | Description | Default |
+|--------|-------------|--------|
+| `-d`, `--dataset` | Dataset to train on (`mnist`, `fashion_mnist`) | `mnist` |
+| `-e`, `--epochs` | Number of training epochs | `30` |
+| `-b`, `--batch_size` | Mini-batch size | `32` |
+| `-lr`, `--learning_rate` | Learning rate | `0.001` |
+| `-wd`, `--weight_decay` | L2 regularization strength | `0.0001` |
+| `-o`, `--optimizer` | Optimizer (`sgd`, `momentum`, `nag`, `rmsprop`) | `rmsprop` |
+| `-nhl`, `--num_layers` | Number of hidden layers | `3` |
+| `-sz`, `--hidden_size` | Neurons in each hidden layer | `[128,128,64]` |
+| `-a`, `--activation` | Activation function (`relu`, `tanh`, `sigmoid`) | `relu` |
+| `-l`, `--loss` | Loss function (`cross_entropy`, `mse`) | `cross_entropy` |
+| `-w_i`, `--weight_init` | Weight initialization (`random`, `xavier`) | `xavier` |
+| `-w_p`, `--wandb_project` | W&B project name | `da6401_assignment_1_my-src` |
+| `--experiment` | Name of the experiment run | optional |
+| `--no_wandb` | Disable W&B logging | off |
+
+---
+
+## Training Example
+
+Run training with the following command:
 
 ```bash
-python train.py \
+python src/train.py \
 -d mnist \
 -e 20 \
 -b 64 \
@@ -127,30 +148,8 @@ python train.py \
 -sz 128 128 64 \
 -a relu \
 -w_i xavier \
--w_p da6401_assignment1 \
---model_save_path best_model.npy
+--experiment baseline_run
 ```
-
----
-
-## Command Line Arguments
-
-| Argument | Description                        |
-| -------- | ---------------------------------- |
-| `-d`                | Dataset (`mnist`, `fashion_mnist`) |
-| `-e`                | Number of training epochs          |
-| `-b`                | Batch size                         |
-| `-o`                | Optimizer                          |
-| `-lr`               | Learning rate                      |
-| `-wd`               | Weight decay                       |
-| `-nhl`              | Number of hidden layers            |
-| `-sz`               | Hidden layer sizes                 |
-| `-a`                | Activation function                |
-| `-l`                | Loss function                      |
-| `-w_i`              | Weight initialization              |
-| `-w_p`              | W&B Project                        |
-| `--model_save_path` | Model Saved Directory              |
----
 
 - The `forward()` method returns logits without softmax at the output
 - The `backward()` method computes gradients from the last layer to the first and returns `(grad_W, grad_b)`
@@ -248,6 +247,7 @@ Performance on MNIST:
 | F1 Score | ~0.97 |
 
 ---
+
 
 
 
